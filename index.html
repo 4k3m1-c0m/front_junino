@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arraiá da Cidade 2026 - O maior da região!</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#E30613">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            montserrat: ["Montserrat", "sans-serif"],
+            luckiest: ["Luckiest Guy", "cursive"]
+          },
+          colors: {
+            primary: "#E30613",
+            secondary: "#FF8000",
+            creme: "#FEF9D7"
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .bg-creme { background-color: #FEF9D7; }
+  </style>
+</head>
+
+<body class="font-montserrat bg-creme text-gray-800">
+
+  <header class="bg-primary text-white flex justify-between items-center px-6 py-4 md:px-20 sticky top-0 z-50 shadow-lg">
+    <div class="flex items-center gap-2">
+        <span class="text-2xl">🎉</span>
+        <h1 class="text-xl md:text-2xl font-black uppercase tracking-tighter">Arraiá da Cidade</h1>
+    </div>
+
+    <button id="menu-btn" class="md:hidden flex flex-col gap-1">
+      <span class="linha w-6 h-0.5 bg-white transition-all"></span>
+      <span class="linha w-6 h-0.5 bg-white transition-all"></span>
+      <span class="linha w-6 h-0.5 bg-white transition-all"></span>
+    </button>
+
+    <nav id="menu" class="hidden absolute top-full left-0 w-full bg-primary md:static md:block md:w-auto text-center md:shadow-none">
+      <ul class="flex flex-col md:flex-row gap-8 p-6 md:p-0 font-bold">
+        <li><a href="#inicio" class="hover:underline">Início</a></li>
+        <li><a href="#cardapio" class="hover:underline">Ingressos</a></li>
+        <li><a href="#sobre" class="hover:underline">Sobre</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="inicio" class="max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col md:flex-row items-center gap-12">
+        <div class="md:w-1/2">
+            <span class="bg-yellow-400 text-primary px-4 py-1 rounded-full font-bold text-sm mb-6 inline-block">🌽 Festa Junina 2026</span>
+            <h2 class="text-5xl md:text-7xl font-black text-primary leading-none mb-6">O maior arraiá da nossa cidade!</h2>
+            <p class="text-lg text-gray-700 mb-8">Compre seu ingresso online e evite filas no dia da festa.</p>
+            <div class="flex gap-4">
+                <a href="#cardapio" class="bg-primary text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:scale-105 transition">Comprar Agora</a>
+            </div>
+        </div>
+        <div class="md:w-1/2">
+            <img src="./assets/images/banner.png" class="w-full max-w-md mx-auto drop-shadow-2xl animate-bounce-slow" style="animation: bounce 3s infinite">
+        </div>
+    </section>
+
+    <section id="cardapio" class="max-w-5xl mx-auto px-6 py-16 border-t border-dashed border-red-300">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-black text-primary uppercase">🎟️ Bilheteria Digital</h2>
+            <p class="text-gray-600">Escolha o ingresso que deseja comprar</p>
+        </div>
+
+        <div id="produtos-container" class="mt-8">
+            <div id="lista-produtos" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+        </div>
+    </section>
+
+    <section id="sobre" class="bg-white py-16 px-6">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
+            <div class="md:w-1/2">
+                <h3 class="text-4xl font-black text-primary mb-4">Informações</h3>
+                <ul class="space-y-4 font-bold text-lg">
+                    <li>📍 Local: Praça Central da Cidade</li>
+                    <li>📅 Data: 20 a 24 de Junho</li>
+                    <li>🔥 Fogueira, Quadrilha e Comidas Típicas</li>
+                </ul>
+            </div>
+            <div class="md:w-1/2 bg-secondary text-white p-8 rounded-[40px] shadow-xl">
+                <h4 class="text-2xl font-black mb-4 italic">⭐ Atrações</h4>
+                <p>Shows ao vivo todas as noites a partir das 20h. Espaço kids com monitoria e segurança total.</p>
+            </div>
+        </div>
+    </section>
+  </main>
+
+  <div id="detalhes-modal" class="fixed inset-0 bg-black/70 z-[80] flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+    <div class="bg-white w-full max-w-[400px] rounded-[30px] overflow-hidden transform scale-95 transition-all" id="detalhes-modal-content">
+      <div class="p-6">
+        <img id="detalhes-img" src="" class="w-full h-48 object-contain mb-4">
+        <h2 id="detalhes-nome" class="text-3xl font-black text-primary"></h2>
+        <p id="detalhes-preco" class="text-2xl font-bold text-secondary mb-4"></p>
+        <p id="detalhes-desc" class="text-gray-600 mb-6"></p>
+        <button id="detalhes-btn-add" class="w-full bg-primary text-white py-4 rounded-2xl font-black shadow-lg">ADICIONAR AO CARRINHO</button>
+        <button onclick="fecharModalDetalhes()" class="w-full mt-2 text-gray-400 font-bold">Voltar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="carrinho-footer" class="fixed bottom-0 left-0 w-full bg-primary text-white p-5 z-50 transform translate-y-full transition-transform flex justify-between items-center cursor-pointer shadow-2xl" onclick="abrirModalCarrinho()">
+    <div>
+      <p class="text-sm opacity-80 uppercase font-bold">Meu Pedido</p>
+      <p id="carrinho-total" class="text-2xl font-black">R$ 0,00</p>
+    </div>
+    <button class="bg-white text-primary px-6 py-2 rounded-xl font-black">FINALIZAR</button>
+  </div>
+
+  <script>
+    const API_URL = 'https://backend-junino.vercel.app/api'; // Substitua pela sua API se necessário
+    let carrinho = [];
+
+    async function carregarProdutos() {
+        const res = await fetch(`${API_URL}/produtos`);
+        const produtos = await res.json();
+        const lista = document.getElementById('lista-produtos');
+        lista.innerHTML = '';
+
+        produtos.forEach(p => {
+            const card = document.createElement('div');
+            card.className = "bg-white p-4 rounded-3xl shadow-md border border-red-50 flex flex-col sm:flex-row items-center gap-4 hover:shadow-lg transition";
+            card.innerHTML = `
+                <img src="${p.imagem}" class="w-full sm:w-28 h-28 object-cover rounded-xl">
+                <div class="flex-1">
+                    <h4 class="font-black text-lg">${p.nome}</h4>
+                    <p class="text-primary font-bold mb-2">R$ ${p.preco.toFixed(2)}</p>
+                    <button onclick="adicionarItem('${p.id}', '${p.nome}', ${p.preco})" class="bg-secondary text-white px-4 py-2 rounded-2xl font-bold uppercase">Adicionar</button>
+                </div>
+            `;
+            lista.appendChild(card);
+        });
+    }
+
+    function adicionarItem(id, nome, preco) {
+        if (navigator.vibrate) navigator.vibrate(50);
+        const index = carrinho.findIndex(i => i.id === id);
+        if (index > -1) carrinho[index].quantidade++;
+        else carrinho.push({id, nome, preco, quantidade: 1});
+        atualizarCarrinho();
+    }
+
+    function atualizarCarrinho() {
+        const total = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
+        document.getElementById('carrinho-total').innerText = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+        document.getElementById('carrinho-footer').classList.toggle('translate-y-full', total === 0);
+        localStorage.setItem('arraia_carrinho', JSON.stringify(carrinho));
+    }
+
+    // Menu Mobile
+    const menuBtn = document.getElementById("menu-btn");
+    menuBtn.onclick = () => {
+        document.getElementById("menu").classList.toggle("hidden");
+    }
+
+    carregarProdutos();
+  </script>
+</body>
+</html>
