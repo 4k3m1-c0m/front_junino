@@ -9,6 +9,67 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; }
         .bg-creme { background-color: #FEF9D7; }
+        body { overflow-x: hidden; }
+        #fogueira {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 88px;
+          height: 120px;
+          pointer-events: none;
+          z-index: 9999;
+          transform: translate(-50%, -100%);
+          opacity: 0.95;
+          transition: opacity 0.25s ease;
+        }
+        #fogueira img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block;
+          pointer-events: none;
+        }
+        .fogo {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform-origin: bottom center;
+          background: radial-gradient(circle at 50% 20%, #fff5b3 0%, #ffec6a 15%, #ff8a00 45%, #e32b2b 75%, transparent 100%);
+          border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
+          filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.55));
+          animation: fogo-pulsar 0.95s infinite ease-in-out;
+        }
+        .fogo::before {
+          content: '';
+          position: absolute;
+          inset: 16% 22% 32% 22%;
+          border-radius: 50%;
+          background: radial-gradient(circle at center, rgba(255, 255, 255, 0.95), rgba(255, 230, 120, 0.2) 50%, transparent 100%);
+        }
+        .fogo:nth-child(1) {
+          width: 24px;
+          height: 60px;
+          left: 40%;
+          animation-duration: 0.9s;
+        }
+        .fogo:nth-child(2) {
+          width: 32px;
+          height: 80px;
+          left: 10%;
+          animation-duration: 1.05s;
+          animation-delay: -0.2s;
+        }
+        .fogo:nth-child(3) {
+          width: 20px;
+          height: 48px;
+          left: 70%;
+          animation-duration: 0.8s;
+          animation-delay: -0.35s;
+        }
+        @keyframes fogo-pulsar {
+          0%, 100% { transform: translateX(0) scale(1) skewX(0); opacity: 0.92; }
+          50% { transform: translateX(4px) scale(1.07) skewX(-5deg); opacity: 1; }
+        }
     </style>
 </head>
 <body class="bg-creme text-gray-800 min-h-screen">
@@ -56,7 +117,7 @@
                     <h3 class="text-xl font-black text-[#E30613] mb-6 flex items-center gap-2">
                         <span class="bg-red-100 p-2 rounded-lg text-sm">02</span> Forma de Pagamento
                     </h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    <div class="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
                         <button id="pix-btn" type="button" data-method="pix" class="payment-method-btn border-2 border-[#FF8000] bg-orange-50 p-4 rounded-2xl flex flex-col items-center gap-2">
                             <span class="text-2xl">⚡</span>
                             <span class="font-bold text-sm">Pix</span>
@@ -64,10 +125,6 @@
                         <button id="card-btn" type="button" data-method="cartao" class="payment-method-btn border-2 border-gray-100 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-[#FF8000] transition">
                             <span class="text-2xl">💳</span>
                             <span class="font-bold text-sm">Cartão</span>
-                        </button>
-                        <button id="boleto-btn" type="button" data-method="boleto" class="payment-method-btn border-2 border-gray-100 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-[#FF8000] transition">
-                            <span class="text-2xl">📄</span>
-                            <span class="font-bold text-sm">Boleto</span>
                         </button>
                     </div>
                     
@@ -99,6 +156,10 @@
     <footer class="text-center py-10 text-gray-400 text-sm italic">
         Arraiá da Cidade 2026 - Onde a tradição se encontra com a diversão!
     </footer>
+
+    <div id="fogueira">
+      <img src="assets/images/fogo.png" alt="Fogo animado" />
+    </div>
 
     <script>
         const paymentButtons = document.querySelectorAll('.payment-method-btn');
@@ -143,6 +204,31 @@
                 }
             });
         });
+
+        const fogueira = document.getElementById('fogueira');
+        let alvoX = window.innerWidth / 2;
+        let alvoY = window.innerHeight / 2;
+        let posX = alvoX;
+        let posY = alvoY;
+
+        document.addEventListener('pointermove', event => {
+          alvoX = event.clientX;
+          alvoY = event.clientY;
+          fogueira.style.opacity = '0.98';
+        });
+
+        document.addEventListener('pointerleave', () => {
+          fogueira.style.opacity = '0.3';
+        });
+
+        function moverFogueira() {
+          posX += (alvoX - posX) * 0.16;
+          posY += (alvoY - posY) * 0.16;
+          fogueira.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -100%)`;
+          requestAnimationFrame(moverFogueira);
+        }
+
+        moverFogueira();
     </script>
 
 </body>

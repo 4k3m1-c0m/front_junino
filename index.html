@@ -33,6 +33,101 @@
   </script>
   <style>
     .bg-creme { background-color: #FEF9D7; }
+    body { overflow-x: hidden; }
+    #fogueira {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 88px;
+      height: 120px;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -100%);
+      opacity: 0.95;
+      transition: opacity 0.25s ease;
+    }
+    #fogueira img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+    .fogo {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform-origin: bottom center;
+      background: radial-gradient(circle at 50% 20%, #fff5b3 0%, #ffec6a 15%, #ff8a00 45%, #e32b2b 75%, transparent 100%);
+      border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
+      filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.55));
+      animation: fogo-pulsar 0.95s infinite ease-in-out;
+    }
+    .fogo::before {
+      content: '';
+      position: absolute;
+      inset: 16% 22% 32% 22%;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.95), rgba(255, 230, 120, 0.2) 50%, transparent 100%);
+    }
+    .fogo:nth-child(1) {
+      width: 24px;
+      height: 60px;
+      left: 40%;
+      animation-duration: 0.9s;
+    }
+    .fogo:nth-child(2) {
+      width: 32px;
+      height: 80px;
+      left: 10%;
+      animation-duration: 1.05s;
+      animation-delay: -0.2s;
+    }
+    .fogo:nth-child(3) {
+      width: 20px;
+      height: 48px;
+      left: 70%;
+      animation-duration: 0.8s;
+      animation-delay: -0.35s;
+    }
+    @keyframes fogo-pulsar {
+      0%, 100% { transform: translateX(0) scale(1) skewX(0); opacity: 0.92; }
+      50% { transform: translateX(4px) scale(1.07) skewX(-5deg); opacity: 1; }
+    }
+    #foto-caipira {
+      background: linear-gradient(180deg, #fff8eb 0%, #ffe8c9 100%);
+      border: 2px dashed #e86f1b;
+      border-radius: 40px;
+      overflow: hidden;
+    }
+    #foto-caipira h2 {
+      color: #b23a00;
+    }
+    #foto-caipira .camera-grid {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr;
+    }
+    #foto-caipira .camera-grid video,
+    #foto-caipira .camera-grid canvas {
+      width: 100%;
+      border-radius: 30px;
+      background: #000;
+    }
+    #foto-caipira .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    #foto-caipira .controls button {
+      min-width: 140px;
+    }
+    #foto-caipira .note {
+      color: #7f3b00;
+      font-weight: 700;
+    }
   </style>
 </head>
 
@@ -81,7 +176,7 @@
         </div>
 
         <div id="produtos-container" class="mt-8">
-            <div id="lista-produtos" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+            <div id="lista-produtos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"></div>
         </div>
     </section>
 
@@ -98,6 +193,27 @@
             <div class="md:w-1/2 bg-secondary text-white p-8 rounded-[40px] shadow-xl">
                 <h4 class="text-2xl font-black mb-4 italic">⭐ Atrações</h4>
                 <p>Shows ao vivo todas as noites a partir das 20h. Espaço kids com monitoria e segurança total.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="foto-caipira" class="max-w-5xl mx-auto px-6 py-16">
+        <div class="text-center mb-10">
+            <h2 class="text-4xl font-black uppercase">📸 Foto Caipira</h2>
+            <p class="text-gray-600 mt-3">Tire uma foto com efeito junino e compartilhe sua cara de caipira!</p>
+        </div>
+
+        <div class="camera-grid max-w-6xl mx-auto">
+            <video id="camera-stream" autoplay playsinline class="hidden"></video>
+            <canvas id="captura-canvas" class="hidden"></canvas>
+            <div class="flex flex-col items-center gap-3">
+                <div class="controls">
+                    <button id="start-camera" class="bg-primary text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:bg-red-700 transition">Abrir câmera</button>
+                    <button id="capture-photo" class="bg-secondary text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:bg-orange-700 transition" disabled>Tirar foto</button>
+                    <button id="download-photo" class="bg-green-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:bg-green-700 transition" disabled>Download</button>
+                    <button id="reset-photo" class="bg-white text-primary px-6 py-3 rounded-2xl font-bold shadow-lg border border-primary" disabled>Reiniciar</button>
+                </div>
+                <p class="note">Se a câmera não abrir, verifique as permissões do navegador.</p>
             </div>
         </div>
     </section>
@@ -124,9 +240,15 @@
     <a href="compra.html" class="bg-white text-primary px-6 py-2 rounded-xl font-black">FINALIZAR</a>
   </div>
 
+  <div id="fogueira">
+    <img src="assets/images/fogo.png" alt="Fogo animado" />
+  </div>
+
   <script>
     const API_URL = 'https://backend-junino.vercel.app/api'; // Substitua pela sua API se necessário
     let carrinho = [];
+    const MAX_INGRESSOS_POR_ITEM = 500;
+    const MAX_INGRESSOS_TOTAL = 500;
 
     async function carregarProdutos() {
         const res = await fetch(`${API_URL}/ingressos`);
@@ -142,18 +264,39 @@
                 <div class="flex-1">
                     <h4 class="font-black text-lg">${p.nome}</h4>
                     <p class="text-primary font-bold mb-2">R$ ${p.preco.toFixed(2)}</p>
-                    <button onclick="adicionarItem('${p.id}', '${p.nome}', ${p.preco})" class="bg-secondary text-white px-4 py-2 rounded-2xl font-bold uppercase">Adicionar</button>
+                    <div class="flex items-center gap-3 mb-4">
+                        <label class="font-bold text-sm">Qtd</label>
+                        <input type="number" min="1" max="${MAX_INGRESSOS_POR_ITEM}" value="1" class="w-20 border border-gray-200 rounded-2xl px-3 py-2 text-sm" />
+                    </div>
+                    <button onclick="adicionarItem('${p.id}', '${p.nome}', ${p.preco}, this)" class="bg-secondary text-white px-4 py-2 rounded-2xl font-bold uppercase">Adicionar</button>
                 </div>
             `;
             lista.appendChild(card);
         });
     }
 
-    function adicionarItem(id, nome, preco) {
+    function adicionarItem(id, nome, preco, botao) {
         if (navigator.vibrate) navigator.vibrate(50);
+        const card = botao.closest('div');
+        const quantidadeInput = card.querySelector('input[type="number"]');
+        let quantidade = parseInt(quantidadeInput.value, 10);
+        if (Number.isNaN(quantidade) || quantidade < 1) quantidade = 1;
+        if (quantidade > MAX_INGRESSOS_POR_ITEM) quantidade = MAX_INGRESSOS_POR_ITEM;
+
+        const totalIngressos = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+        if (totalIngressos + quantidade > MAX_INGRESSOS_TOTAL) {
+            alert(`Limite de ${MAX_INGRESSOS_TOTAL} ingressos por pedido atingido.`);
+            return;
+        }
+
         const index = carrinho.findIndex(i => i.id === id);
-        if (index > -1) carrinho[index].quantidade++;
-        else carrinho.push({id, nome, preco, quantidade: 1});
+        if (index > -1) {
+            const novaQuantidade = carrinho[index].quantidade + quantidade;
+            carrinho[index].quantidade = Math.min(novaQuantidade, MAX_INGRESSOS_POR_ITEM);
+        } else {
+            carrinho.push({id, nome, preco, quantidade});
+        }
+
         atualizarCarrinho();
     }
 
@@ -171,6 +314,131 @@
     }
 
     carregarProdutos();
+
+    const video = document.getElementById('camera-stream');
+    const canvas = document.getElementById('captura-canvas');
+    const startButton = document.getElementById('start-camera');
+    const captureButton = document.getElementById('capture-photo');
+    const downloadButton = document.getElementById('download-photo');
+    const resetButton = document.getElementById('reset-photo');
+    let stream = null;
+    const filtroImage = new Image();
+    filtroImage.src = 'assets/images/frente.png';
+    const fogoOverlay = new Image();
+    fogoOverlay.src = 'assets/images/fogo.png';
+    const pessoasOverlay = new Image();
+    pessoasOverlay.src = 'assets/images/pessoas.png';
+
+    function downloadPhoto() {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `foto-caipira-${new Date().getTime()}.png`;
+      link.click();
+    }
+
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        video.srcObject = stream;
+        video.classList.remove('hidden');
+        canvas.classList.add('hidden');
+        captureButton.disabled = false;
+        resetButton.disabled = false;
+        startButton.textContent = 'Câmera ativada';
+        const fotoCaipiraSection = document.getElementById('foto-caipira');
+        fotoCaipiraSection.scrollIntoView({ behavior: 'smooth' });
+      } catch (error) {
+        alert('Não foi possível acessar a câmera. Verifique as permissões e tente novamente.');
+      }
+    }
+
+    function drawCaipiraOverlay(ctx, width, height) {
+      if (filtroImage.complete && filtroImage.naturalWidth) {
+        const aspect = filtroImage.naturalHeight / filtroImage.naturalWidth;
+        const overlayHeight = Math.min(height * 0.45, Math.round(width * aspect));
+        const overlayY = Math.round(height * 0.03);
+        ctx.drawImage(filtroImage, 0, overlayY, width, overlayHeight);
+      } else {
+        const overlayHeight = Math.round(height * 0.28);
+        ctx.fillStyle = 'rgba(200, 40, 20, 0.55)';
+        ctx.beginPath();
+        ctx.moveTo(width * 0.08, height * 0.18);
+        ctx.quadraticCurveTo(width * 0.5, height * 0.03, width * 0.92, height * 0.18);
+        ctx.lineTo(width * 0.92, height * 0.32);
+        ctx.lineTo(width * 0.08, height * 0.32);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    function applyCaipiraEffect() {
+      const ctx = canvas.getContext('2d');
+      const width = video.videoWidth;
+      const height = video.videoHeight;
+      canvas.width = width;
+      canvas.height = height;
+      ctx.filter = 'sepia(0.35) contrast(1.15) saturate(1.2) brightness(1.05)';
+      ctx.drawImage(video, 0, 0, width, height);
+      ctx.filter = 'none';
+      drawCaipiraOverlay(ctx, width, height);
+      if (fogoOverlay.complete && fogoOverlay.naturalWidth) {
+        const fireWidth = Math.round(width * 0.22);
+        const fireHeight = Math.round(fireWidth * (fogoOverlay.naturalHeight / fogoOverlay.naturalWidth));
+        ctx.drawImage(fogoOverlay, width - fireWidth - 16, height - fireHeight - 16, fireWidth, fireHeight);
+      }
+      if (pessoasOverlay.complete && pessoasOverlay.naturalWidth) {
+        const peopleWidth = Math.round(width * 0.24);
+        const peopleHeight = Math.round(peopleWidth * (pessoasOverlay.naturalHeight / pessoasOverlay.naturalWidth));
+        ctx.drawImage(pessoasOverlay, 16, height - peopleHeight - 16, peopleWidth, peopleHeight);
+      }
+      video.classList.add('hidden');
+      canvas.classList.remove('hidden');
+      downloadButton.disabled = false;
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      video.classList.add('hidden');
+      captureButton.disabled = true;
+    }
+
+    startButton.addEventListener('click', startCamera);
+    captureButton.addEventListener('click', applyCaipiraEffect);
+    downloadButton.addEventListener('click', downloadPhoto);
+    resetButton.addEventListener('click', () => {
+      stopCamera();
+      canvas.classList.add('hidden');
+      downloadButton.disabled = true;
+      startButton.textContent = 'Abrir câmera';
+    });
+
+    const fogueira = document.getElementById('fogueira');
+    let alvoX = window.innerWidth / 2;
+    let alvoY = window.innerHeight / 2;
+    let posX = alvoX;
+    let posY = alvoY;
+
+    document.addEventListener('pointermove', event => {
+      alvoX = event.clientX;
+      alvoY = event.clientY;
+      fogueira.style.opacity = '0.98';
+    });
+
+    document.addEventListener('pointerleave', () => {
+      fogueira.style.opacity = '0.3';
+    });
+
+    function moverFogueira() {
+      posX += (alvoX - posX) * 0.16;
+      posY += (alvoY - posY) * 0.16;
+      fogueira.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -100%)`;
+      requestAnimationFrame(moverFogueira);
+    }
+
+    moverFogueira();
   </script>
 </body>
 </html>
